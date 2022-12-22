@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Alarm86</string>
+    <string name="manager_add">ADD</string>
 </resources>

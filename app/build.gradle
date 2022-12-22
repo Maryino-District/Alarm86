@@ -36,6 +36,12 @@ android {
 }
 
 dependencies {
+// Room
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+// for more RESTful api calls (framework for interacting with rest apis)
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.google.android.material:material:1.6.1'
     implementation "androidx.fragment:fragment-ktx:1.5.2"
