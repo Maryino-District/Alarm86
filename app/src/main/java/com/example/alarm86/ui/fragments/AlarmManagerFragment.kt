@@ -1,15 +1,12 @@
 package com.example.alarm86.ui.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
 import com.example.alarm86.R
 import com.example.alarm86.databinding.FragmentAlarmManagerBinding
 import com.example.alarm86.ui.AlarmModel
@@ -32,16 +29,40 @@ class AlarmManagerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewmodel.data.observe(this.viewLifecycleOwner) {
-            Toast.makeText(context, "data size is ${viewmodel.data.value?.getOrNull(it.lastIndex)?.minute}", Toast.LENGTH_SHORT).show()
-        }
+
         binding.btnManagerAdd.setOnClickListener {
-            Log.d(ALARM_MANAGER_FRAGMENT_TAG, "AMP: on view Created")
-            //NavHostFragment.findNavController(this).navigate(R.id.action_from_manager_to_event)
             val hour = binding.timePicker.hour
             val min = binding.timePicker.minute
-            viewmodel.addAlarm(AlarmModel(hour = hour, minute = min, isEnabled = false))
+            Log.d(ALARM_MANAGER_FRAGMENT_TAG, "AMP: on view Created, selected time is $hour:$min")
+            binding.tvTimeAlarmManager.apply {
+                visibility = View.VISIBLE
+                text = getString(R.string.alarm_manager_time, hour, min)
+            }
+            binding.switchAlarmManager.visibility = View.VISIBLE
+            viewmodel.addAlarm(AlarmModel(hour = hour, minute = min, isEnabledAlarm = false))
         }
+
+
+        binding.switchAlarmManager.setOnCheckedChangeListener { compoundButton, isEnabled ->
+            viewmodel.addAlarm(AlarmModel(viewmodel.data.value?.first()?.hour, viewmodel.data.value?.first()?.hour, isEnabledAlarm = isEnabled ))
+        }
+
+        viewmodel.data.observe(viewLifecycleOwner) {
+            viewmodel.data.value?.takeIf { it.isNotEmpty() }?.first()?.let {
+                binding.tvTimeAlarmManager.apply {
+                    visibility = View.VISIBLE
+                    text =
+                        getString(R.string.alarm_manager_time, it.hour, it.minute)
+                }
+                binding.switchAlarmManager.apply {
+                    visibility = View.VISIBLE
+                    isChecked = it.isEnabledAlarm
+                }
+            }
+        }
+
+
+
 
 
     }
