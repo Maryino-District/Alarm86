@@ -10,5 +10,6 @@ data class AlarmEntity(
     val id: Int = 10,
     val minute: Int,
     val hour: Int,
-    val isEnabled: Boolean
+    val isEnabled: Boolean,
+
 )
