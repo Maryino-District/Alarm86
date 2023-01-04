@@ -26,10 +26,10 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     private val _data = MutableLiveData<List<AlarmModel>>(emptyList())
     private var job: Job? = null
     val data: LiveData<List<AlarmModel>> = _data
+
     init {
         repository = AlarmRepository(AlarmDatabase.getDatabase(application.applicationContext).alarmDao())
         loadData()
-
     }
 
     fun loadData() {
@@ -44,15 +44,10 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository?.addAlarm(alarm)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
+        cancelPreviousAlarm()
     }
 
     fun scheduleAlarm(hour: Int, minutes: Int) {
-        cancelPreviousAlarm()
         val pendingIntent = buildAlarmPendingIntend()
         val alarmCalendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
@@ -62,14 +57,13 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             set(Calendar.MILLISECOND, 0)
             if (timeInMillis <= System.currentTimeMillis()) set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH)+1)
         }
-        Log.d(VIEWMODEL_TAG, "VM: cheduleAlarm on months day:" +
+        Log.d(VIEWMODEL_TAG, "VM: scheduleAlarm on months day:" +
                 " ${alarmCalendar.get(Calendar.DAY_OF_MONTH)} " +
                 "weeks day: ${alarmCalendar.get(Calendar.DAY_OF_WEEK)}, " +
                 "hour: ${alarmCalendar.get(Calendar.HOUR_OF_DAY)}, min: ${alarmCalendar.get(Calendar.MINUTE)}")
         (getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.apply {
             setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmCalendar.timeInMillis, pendingIntent)
         }
-
     }
 
     fun cancelPreviousAlarm() {
@@ -80,10 +74,14 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         (getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.apply {
             cancel(pendingIntent)
         }
-
     }
 
     private fun buildAlarmPendingIntend() = Intent(getApplication(), AlarmBroadcastReceiver::class.java).let {
                 PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
     }
 }

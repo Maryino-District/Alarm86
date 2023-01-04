@@ -19,7 +19,6 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
     private fun startAlarmService(intent: Intent, context: Context?) {
         Intent(context, AlarmService::class.java).also {
-            it.putExtra(DAY_OF_WEEK_SERVICE_KEY, Calendar.DAY_OF_WEEK)
             Log.d(ALARM_SERVICE_TAG, "AlarmService: startAlarmService, day is ${Calendar.DAY_OF_WEEK}")
             context?.startForegroundService(it)
         }

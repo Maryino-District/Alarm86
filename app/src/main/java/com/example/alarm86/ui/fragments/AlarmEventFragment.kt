@@ -1,11 +1,16 @@
 package com.example.alarm86.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
+import com.example.alarm86.R
 import com.example.alarm86.databinding.FragmentAlarmEventBinding
+import com.example.alarm86.infrastrucrure.AlarmService
 
 class AlarmEventFragment : Fragment() {
     private lateinit var binding: FragmentAlarmEventBinding
@@ -20,7 +25,12 @@ class AlarmEventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.button.setOnClickListener {
+            Intent(this.context, AlarmService::class.java).let {
+                this.context?.stopService(it)
+            }
+            NavHostFragment.findNavController(this).navigate(R.id.action_from_event_to_manager)
+        }
     }
 
 }

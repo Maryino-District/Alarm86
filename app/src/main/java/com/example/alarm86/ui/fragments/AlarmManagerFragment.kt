@@ -31,15 +31,18 @@ class AlarmManagerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnManagerAdd.setOnClickListener {
-            val hour = binding.timePicker.hour
-            val min = binding.timePicker.minute
-            Log.d(ALARM_MANAGER_FRAGMENT_TAG, "AMP: on view Created, selected time is $hour:$min")
+            Log.d(ALARM_MANAGER_FRAGMENT_TAG, "AMP: on view Created, selected time is ${binding.timePicker.minute}:${binding.timePicker.minute}")
             binding.tvTimeAlarmManager.apply {
                 visibility = View.VISIBLE
-                text = getString(R.string.alarm_manager_time, hour, min)
+                text = getString(R.string.alarm_manager_time, binding.timePicker.hour, binding.timePicker.minute)
             }
             binding.switchAlarmManager.visibility = View.VISIBLE
-            viewmodel.addAlarm(AlarmModel(hour = hour, minute = min, isEnabledAlarm = false))
+            viewmodel.addAlarm(
+                AlarmModel(
+                    hour = binding.timePicker.hour,
+                    minute = binding.timePicker.minute,
+                    isEnabledAlarm = false,
+                ))
         }
 
 
@@ -47,17 +50,14 @@ class AlarmManagerFragment : Fragment() {
             if (isEnabled) {
                 viewmodel.addAlarm(AlarmModel(viewmodel.data.value?.first()?.hour, viewmodel.data.value?.first()?.minute, isEnabledAlarm = isEnabled ))
                 viewmodel.scheduleAlarm(binding.timePicker.hour, binding.timePicker.minute)
-            } else {
-                viewmodel.cancelPreviousAlarm()
-            }
+            } else viewmodel.cancelPreviousAlarm()
         }
 
         viewmodel.data.observe(viewLifecycleOwner) {
-            viewmodel.data.value?.takeIf { it.isNotEmpty() }?.first()?.let {
+            viewmodel.data.value?.getOrNull(0)?.let {
                 binding.tvTimeAlarmManager.apply {
                     visibility = View.VISIBLE
-                    text =
-                        getString(R.string.alarm_manager_time, it.hour, it.minute)
+                    text = getString(R.string.alarm_manager_time, it.hour, it.minute)
                 }
                 binding.switchAlarmManager.apply {
                     visibility = View.VISIBLE
@@ -65,11 +65,5 @@ class AlarmManagerFragment : Fragment() {
                 }
             }
         }
-
-
-
-
-
     }
-
 }

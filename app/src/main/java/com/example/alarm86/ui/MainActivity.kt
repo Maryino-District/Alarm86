@@ -10,10 +10,14 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.fragment.app.commit
 import androidx.navigation.NavAction
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
 import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.alarm86.R
 import com.example.alarm86.databinding.ActivityMainBinding
+import com.example.alarm86.infrastrucrure.START_ACTIVITY_WITH_ALARM_ACTION
 import com.example.alarm86.ui.fragments.AlarmManagerFragment
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +28,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (intent.action == START_ACTIVITY_WITH_ALARM_ACTION) {
+            val navHost = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+            val navGraph = navHost.navController.graph
+            navGraph.startDestination = R.id.nav_fragment_alarm_event
+            navHost.navController.graph = navGraph
+        }
         turnScreenOnAndKeyguardOff()
         Log.d(MAIN_ACTIVITY_TAG, "MA: On create")
     }

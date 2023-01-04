@@ -16,7 +16,6 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.alarm86.R
 import com.example.alarm86.ui.MainActivity
 import java.util.*
-import java.util.Calendar.*
 
 class AlarmService : Service() {
     private val mediaPlayer: MediaPlayer by lazy {
@@ -84,5 +83,8 @@ class AlarmService : Service() {
         super.onDestroy()
         mediaPlayer.stop()
         vibration.value.cancel()
+        (this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).let {
+            //
+        }
     }
 }
