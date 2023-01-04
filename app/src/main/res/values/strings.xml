@@ -4,4 +4,7 @@
     <string name="alarm_manager_time">%1$d : %2$d</string>
     <string name="manager_enable">Enable</string>
     <string name="manager_disable">Disable</string>
+    <string name="notificaiton_channel_name">Alarm</string>
+    <string name="notification_channel_descriprion">Alarm channel properties</string>
+    <string name="notification_alarm_title">Suck cock</string>
 </resources>

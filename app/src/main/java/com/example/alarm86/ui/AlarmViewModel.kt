@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,8 +15,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.alarm86.data.AlarmDatabase
 import com.example.alarm86.data.AlarmRepository
 import com.example.alarm86.infrastrucrure.AlarmBroadcastReceiver
+import com.example.alarm86.infrastrucrure.SETTING_ALARM_REQUEST_CODE
+import com.example.alarm86.infrastrucrure.VIEWMODEL_TAG
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+
 
 class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     private var repository: AlarmRepository? = null
@@ -47,6 +52,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun scheduleAlarm(hour: Int, minutes: Int) {
+        cancelPreviousAlarm()
         val pendingIntent = buildAlarmPendingIntend()
         val alarmCalendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
@@ -56,14 +62,28 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             set(Calendar.MILLISECOND, 0)
             if (timeInMillis <= System.currentTimeMillis()) set(Calendar.DAY_OF_MONTH, get(Calendar.DAY_OF_MONTH)+1)
         }
+        Log.d(VIEWMODEL_TAG, "VM: cheduleAlarm on months day:" +
+                " ${alarmCalendar.get(Calendar.DAY_OF_MONTH)} " +
+                "weeks day: ${alarmCalendar.get(Calendar.DAY_OF_WEEK)}, " +
+                "hour: ${alarmCalendar.get(Calendar.HOUR_OF_DAY)}, min: ${alarmCalendar.get(Calendar.MINUTE)}")
         (getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.apply {
-            setRepeating(AlarmManager.RTC_WAKEUP, alarmCalendar.timeInMillis, 86400000, pendingIntent)
+            setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmCalendar.timeInMillis, pendingIntent)
+        }
+
+    }
+
+    fun cancelPreviousAlarm() {
+        Log.d(VIEWMODEL_TAG, "VM: cancel previous" )
+        val pendingIntent = Intent(getApplication(), AlarmBroadcastReceiver::class.java).let {
+            PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+        (getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.apply {
+            cancel(pendingIntent)
         }
 
     }
 
     private fun buildAlarmPendingIntend() = Intent(getApplication(), AlarmBroadcastReceiver::class.java).let {
-                PendingIntent.getBroadcast(getApplication(),68, it, PendingIntent.FLAG_IMMUTABLE)
-
+                PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }

@@ -44,9 +44,11 @@ class AlarmManagerFragment : Fragment() {
 
 
         binding.switchAlarmManager.setOnCheckedChangeListener { compoundButton, isEnabled ->
-            viewmodel.takeIf { isEnabled }?.apply {
-                addAlarm(AlarmModel(viewmodel.data.value?.first()?.hour, viewmodel.data.value?.first()?.hour, isEnabledAlarm = isEnabled ))
-                scheduleAlarm()
+            if (isEnabled) {
+                viewmodel.addAlarm(AlarmModel(viewmodel.data.value?.first()?.hour, viewmodel.data.value?.first()?.minute, isEnabledAlarm = isEnabled ))
+                viewmodel.scheduleAlarm(binding.timePicker.hour, binding.timePicker.minute)
+            } else {
+                viewmodel.cancelPreviousAlarm()
             }
         }
 
