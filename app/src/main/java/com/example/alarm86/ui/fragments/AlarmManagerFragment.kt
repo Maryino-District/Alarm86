@@ -1,5 +1,4 @@
 package com.example.alarm86.ui.fragments
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -47,10 +46,9 @@ class AlarmManagerFragment : Fragment() {
 
 
         binding.switchAlarmManager.setOnCheckedChangeListener { compoundButton, isEnabled ->
-            if (isEnabled) {
-                viewmodel.addAlarm(AlarmModel(viewmodel.data.value?.first()?.hour, viewmodel.data.value?.first()?.minute, isEnabledAlarm = isEnabled ))
-                viewmodel.scheduleAlarm(binding.timePicker.hour, binding.timePicker.minute)
-            } else viewmodel.cancelPreviousAlarm()
+            viewmodel.data.value?.takeIf {it.isNotEmpty()}?.let {
+                viewmodel.addAlarm(AlarmModel(it.first().hour, it.first().minute, isEnabledAlarm = isEnabled))
+            }
         }
 
         viewmodel.data.observe(viewLifecycleOwner) {

@@ -32,10 +32,17 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         loadData()
     }
 
-    fun loadData() {
+    private fun loadData() {
         job = viewModelScope.launch {
-            repository?.let{(it.getAlarms()).collect {
-                _data.postValue(it)
+            repository?.let{ repository ->
+                (repository.getAlarms()).collect { alarmList ->
+                _data.postValue(alarmList)
+                alarmList.getOrNull(0)?.let { alarm ->
+                    cancelPreviousAlarm()
+                    if (alarm.isEnabledAlarm) {
+                        scheduleAlarm(hour = alarm.hour, minutes = alarm.minute)
+                    }
+                }
             }}
         }
     }
@@ -44,7 +51,6 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository?.addAlarm(alarm)
         }
-        cancelPreviousAlarm()
     }
 
     fun scheduleAlarm(hour: Int, minutes: Int) {
@@ -66,10 +72,10 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun cancelPreviousAlarm() {
+    private fun cancelPreviousAlarm() {
         Log.d(VIEWMODEL_TAG, "VM: cancel previous" )
         val pendingIntent = Intent(getApplication(), AlarmBroadcastReceiver::class.java).let {
-            PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it,PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
         (getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.apply {
             cancel(pendingIntent)
@@ -77,7 +83,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun buildAlarmPendingIntend() = Intent(getApplication(), AlarmBroadcastReceiver::class.java).let {
-                PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(getApplication(), SETTING_ALARM_REQUEST_CODE, it,PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     override fun onCleared() {

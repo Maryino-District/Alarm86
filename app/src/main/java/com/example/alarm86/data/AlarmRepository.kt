@@ -9,8 +9,8 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
     private val ALARM_REPO_TAG = "ALARM_REPO_TAG"
     suspend fun addAlarm(alarm: AlarmModel) : Long {
         val alarmEntity = AlarmEntity(
-            minute = alarm.minute!!,
-            hour = alarm.hour!!,
+            minute = alarm.minute,
+            hour = alarm.hour,
             isEnabled = alarm.isEnabledAlarm
         )
          val result = alarmDao.addAlarm(alarmEntity)
