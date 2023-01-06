@@ -7,16 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.alarm86.data.AlarmDatabase
 import com.example.alarm86.data.AlarmRepository
-import com.example.alarm86.infrastrucrure.AlarmBroadcastReceiver
-import com.example.alarm86.infrastrucrure.SETTING_ALARM_REQUEST_CODE
-import com.example.alarm86.infrastrucrure.VIEWMODEL_TAG
+import com.example.alarm86.infrastructure.AlarmBroadcastReceiver
+import com.example.alarm86.infrastructure.SETTING_ALARM_REQUEST_CODE
+import com.example.alarm86.infrastructure.VIEWMODEL_TAG
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 

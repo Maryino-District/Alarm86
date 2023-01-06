@@ -22,6 +22,8 @@
         <action
             android:id="@+id/action_from_event_to_manager"
             app:destination="@+id/nav_fragment_alarm_manager"
+            app:popUpTo="@id/nav_fragment_alarm_event"
+            app:popUpToInclusive="true"
         />
     </fragment>
 </navigation>
