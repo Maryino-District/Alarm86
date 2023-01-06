@@ -17,17 +17,17 @@ import com.example.alarm86.ui.MainActivity
 import java.util.*
 
 class AlarmService : Service() {
-  /*  private val mediaPlayer: MediaPlayer by lazy {
-        Log.d(ALARM_SERVICE_TAG, "Service: Init media player")
+  /*  private  val soundUri by lazy { by lazy {
+        Log.d(ALARM_SERVICE_TAG, "Service: Init sounduris")
         when(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-            1 -> MediaPlayer.create(this, R.raw.sample_one)
-            2 -> MediaPlayer.create(this, R.raw.sample_to)
-            3 -> MediaPlayer.create(this, R.raw.sample_free)
-            4 -> MediaPlayer.create(this, R.raw.sample_one)
-            5 -> MediaPlayer.create(this, R.raw.sample_to)
-            6 -> MediaPlayer.create(this, R.raw.sample_free)
-            7 -> MediaPlayer.create(this, R.raw.sample_one)
-            else -> MediaPlayer.create(this, R.raw.sample_free)
+            1 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.cure)
+            2 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.hova)
+            3 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.metronome)
+            4 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.money)
+            5 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.numb)
+            6 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.pieces)
+            7 -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.versus)
+            else -> Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + this.packageName + "/" + R.raw.versus)
         }
     }*/
   val soundUri by lazy {
@@ -40,7 +40,6 @@ class AlarmService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
-        //mediaPlayer.start()
         Log.d(ALARM_SERVICE_TAG, "Service: On Start Command")
         val pattern = longArrayOf(0, 100, 1000)
         vibration.value.vibrate(pattern, 0)
@@ -55,8 +54,6 @@ class AlarmService : Service() {
     }
 
     private fun createNotificationChannel() {
-
-
         val notificationChannel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             this.getString(R.string.notificaiton_channel_name),
@@ -70,7 +67,8 @@ class AlarmService : Service() {
             .build()
         notificationChannel.setSound(soundUri, audioAttributes)
 
-        NotificationManagerCompat.from(this).createNotificationChannel(notificationChannel)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(notificationChannel)
     }
 
     private fun buildNotification() : Notification {

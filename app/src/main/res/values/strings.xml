@@ -9,4 +9,5 @@
     <string name="notification_alarm_title">Suck cock</string>
     <string name="firebase_channel_name">Firebase service channel</string>
     <string name="firebase_channel_description">Slap my ass</string>
+    <string name="default_notification_channel_id">FIREBASE_NOTIFICATION_CHANNEL_ID</string>
 </resources>
